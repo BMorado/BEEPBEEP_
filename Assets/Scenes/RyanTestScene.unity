@@ -184,7 +184,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startTile: {fileID: 7624979620654829675, guid: 7904b9879d848c249879eb343d01fb74, type: 3}
-  finishTile: {fileID: 0}
+  finishTile: {fileID: 1438077349321575162, guid: 3b89d7e2f8a06bc478339b34bcacaf68, type: 3}
   normalTile: {fileID: 0}
   shopTile: {fileID: 0}
   blankTile: {fileID: 0}
