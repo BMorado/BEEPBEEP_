@@ -7,6 +7,7 @@ using Unity.Collections;
 using Unity.VisualScripting;
 using System;
 using System.Runtime.InteropServices;
+using UnityEngine.UIElements;
 
 public class MapManager : MonoBehaviour
 {
@@ -21,8 +22,8 @@ public class MapManager : MonoBehaviour
     [SerializeField] private GameObject forwardslash;
     [SerializeField] private GameObject backslash;
 
-    private static int X_MAX = 20;
-    private static int Y_MAX = 20;
+    private static int X_MAX = 10;
+    private static int Y_MAX = 10;
     private static int MAX_NUMBER_OF_ROOMS = 40;
     private Vector2[] rooms = new Vector2[MAX_NUMBER_OF_ROOMS];
     private int roomCounter = 0;
@@ -33,13 +34,10 @@ public class MapManager : MonoBehaviour
     // Start is called before the first frame update
     public void Start()
     {
-
         UnityEngine.Random.InitState(System.DateTime.Now.Millisecond);
 
         int x = UnityEngine.Random.Range((X_MAX * -1), X_MAX);
         int y = UnityEngine.Random.Range((Y_MAX * -1), Y_MAX);
-
-        Debug.Log(x + ", " + y);
 
         rooms[roomCounter] = new Vector2(x, y);
         Instantiate(startRoom, rooms[roomCounter], quaternion.identity);
@@ -48,20 +46,37 @@ public class MapManager : MonoBehaviour
         // roomHashMap.Add(rooms[roomCounter], null);
 
         int count = 0;
-        while (count < MAX_NUMBER_OF_ROOMS - 1) {
-            SpawnAdjacent(normalRoom, rooms[UnityEngine.Random.Range(0, roomCounter)]);
-            count ++;
+        int temp = 0;
+        int finalRoomIndex = UnityEngine.Random.Range(MAX_NUMBER_OF_ROOMS / 2, MAX_NUMBER_OF_ROOMS);
+        while (count < MAX_NUMBER_OF_ROOMS - 1)
+        {
+            temp = roomCounter;
+            if (finalRoomIndex == count)
+            {
+                SpawnAdjacent(finishRoom, rooms[UnityEngine.Random.Range(0, roomCounter)]);
+            }
+            else
+            {
+                SpawnAdjacent(normalRoom, rooms[UnityEngine.Random.Range(0, roomCounter)]);
+            }
+
+            if (temp != roomCounter)
+            {
+                count++;
+            }
         }
     }
 
     public void SpawnAdjacent(GameObject prefabTile, Vector2 root)
     {
         List<Vector2> adjacentCoords = GetAvailableAdjacent(root);
-        int index = UnityEngine.Random.Range(0, adjacentCoords.Count - 1);
-        Instantiate(prefabTile, adjacentCoords[index], quaternion.identity);
-        rooms[roomCounter] = adjacentCoords[index];
-        roomCounter++;
-
+        if (adjacentCoords.Count != 0)
+        {
+            int index = UnityEngine.Random.Range(0, adjacentCoords.Count - 1);
+            Instantiate(prefabTile, adjacentCoords[index], quaternion.identity);
+            rooms[roomCounter] = adjacentCoords[index];
+            roomCounter++;
+        }
     }
 
     public List<Vector2> GetAvailableAdjacent(Vector2 root)
@@ -76,10 +91,9 @@ public class MapManager : MonoBehaviour
                 availableAdjacentCoords.Add(coord);
             }
         }
-
         foreach (Vector2 coord in rooms)
         {
-            if (availableAdjacentCoords.Count == 1)
+            if (availableAdjacentCoords.Count == 0)
             {
                 break;
             }
@@ -88,7 +102,6 @@ public class MapManager : MonoBehaviour
                 availableAdjacentCoords.Remove(coord);
             }
         }
-
         return availableAdjacentCoords;
     }
 
