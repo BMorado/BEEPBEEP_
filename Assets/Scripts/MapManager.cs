@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Mathematics;
@@ -22,19 +21,19 @@ public class MapManager : MonoBehaviour
     [SerializeField] private GameObject forwardslash;
     [SerializeField] private GameObject backslash;
 
-    private static int X_MAX = 10;
-    private static int Y_MAX = 10;
-    private static int MAX_NUMBER_OF_ROOMS = 40;
+    private static int X_MAX = 3;
+    private static int Y_MAX = 3;
+    private static int MAX_NUMBER_OF_ROOMS = 5;
     private Vector2[] rooms = new Vector2[MAX_NUMBER_OF_ROOMS];
     private int roomCounter = 0;
-    private Dictionary<Vector2, List<Vector2>> roomHashMap;
+    private List<Vector2> paths = new List<Vector2>();
 
     #endregion
 
     // Start is called before the first frame update
     public void Start()
     {
-        UnityEngine.Random.InitState(System.DateTime.Now.Millisecond);
+        // UnityEngine.Random.InitState(System.DateTime.Now.Millisecond);
 
         int x = UnityEngine.Random.Range((X_MAX * -1), X_MAX);
         int y = UnityEngine.Random.Range((Y_MAX * -1), Y_MAX);
@@ -53,11 +52,11 @@ public class MapManager : MonoBehaviour
             temp = roomCounter;
             if (finalRoomIndex == count)
             {
-                SpawnAdjacent(finishRoom, rooms[UnityEngine.Random.Range(0, roomCounter)]);
+                SpawnAdjacentRoom(finishRoom, rooms[UnityEngine.Random.Range(0, roomCounter)]);
             }
             else
             {
-                SpawnAdjacent(normalRoom, rooms[UnityEngine.Random.Range(0, roomCounter)]);
+                SpawnAdjacentRoom(normalRoom, rooms[UnityEngine.Random.Range(0, roomCounter)]);
             }
 
             if (temp != roomCounter)
@@ -65,11 +64,70 @@ public class MapManager : MonoBehaviour
                 count++;
             }
         }
+
+        List<Vector2> adjacentPaths;
+        int localMaxPaths;
+        foreach (Vector2 room in rooms)
+        {
+            adjacentPaths = GetAvailableAdjacentPaths(room);
+
+            Debug.Log("root: (" + room.x + ", " + room.y + ")");
+
+            string message = "adjacent Paths { ";
+            foreach (Vector2 v in adjacentPaths)
+            {
+                message += ("(" + v.x + ", " + v.y + ") ");
+            }
+            message += "}";
+            Debug.Log(message);
+
+            if (adjacentPaths.Count != 0)
+            {
+                localMaxPaths = UnityEngine.Random.Range(0, adjacentPaths.Count - 1);
+                count = 0;
+                while (count < localMaxPaths)
+                {
+                    temp = adjacentPaths.Count;
+                    int index = UnityEngine.Random.Range(0, adjacentPaths.Count - 1);
+
+                    GameObject pathTile = GetPathTile(room, adjacentPaths[index]);
+                    Instantiate(pathTile, adjacentPaths[index], quaternion.identity);
+
+                    // string message = "Before: { ";
+                    // foreach (Vector2 v in adjacentPaths)
+                    // {
+                    //     message += ("(" + v.x + ", " + v.y + ") ");
+                    // }
+                    // message += "}";
+                    // Debug.Log(message);
+
+                    paths.Add(adjacentPaths[index]);
+                    adjacentPaths.Remove(adjacentPaths[index]);
+
+                    // message = "After: { ";
+                    // foreach (Vector2 v in adjacentPaths)
+                    // {
+                    //     message += ("(" + v.x + ", " + v.y + ") ");
+                    // }
+                    // message += "}";
+                    // Debug.Log(message);
+
+                    count++;
+                }
+                message = "paths: { ";
+                    foreach (Vector2 v in paths)
+                    {
+                        message += ("(" + v.x + ", " + v.y + ") ");
+                    }
+                    message += "}";
+                    Debug.Log(message);
+            }
+        }
     }
 
-    public void SpawnAdjacent(GameObject prefabTile, Vector2 root)
+    private void SpawnAdjacentRoom(GameObject prefabTile, Vector2 root)
     {
-        List<Vector2> adjacentCoords = GetAvailableAdjacent(root);
+        List<Vector2> adjacentCoords = GetAvailableAdjacentRooms(root);
         if (adjacentCoords.Count != 0)
         {
             int index = UnityEngine.Random.Range(0, adjacentCoords.Count - 1);
@@ -79,7 +137,20 @@ public class MapManager : MonoBehaviour
         }
     }
 
-    public List<Vector2> GetAvailableAdjacent(Vector2 root)
+    // private void SpawnAdjacentPath(GameObject prefabTile, Vector2 root)
+    // {
+    //     List<Vector2> adjacentCoords = GetAvailableAdjacentPaths(root);
+    //     if (adjacentCoords.Count != 0)
+    //     {
+    //         int index = UnityEngine.Random.Range(0, adjacentCoords.Count - 1);
+
+    //         Instantiate(prefabTile, adjacentCoords[index], quaternion.identity);
+    //         rooms[roomCounter] = adjacentCoords[index];
+    //         roomCounter++;
+    //     }
+    // }
+
+    private List<Vector2> GetAvailableAdjacentRooms(Vector2 root)
     {
         List<Vector2> allAdjacentCoords = GetAdjacentCoords(root);
         List<Vector2> availableAdjacentCoords = new List<Vector2>();
@@ -105,6 +176,28 @@ public class MapManager : MonoBehaviour
         return availableAdjacentCoords;
     }
 
+    private List<Vector2> GetAvailableAdjacentPaths(Vector2 root)
+    {
+        List<Vector2> allAdjacentCoords = GetAdjacentCoords(root);
+        List<Vector2> availableAdjacentCoords = new List<Vector2>();
+        Vector2 temp;
+
+        foreach (Vector2 coord in allAdjacentCoords)
+        {
+            if (Array.IndexOf(rooms, coord) != -1)
+            {
+                if (!paths.Contains(coord))
+                {
+                    temp = coord;
+                    temp.x = (temp.x + root.x) / 2;
+                    temp.y = (temp.y + root.y) / 2;
+
+                    availableAdjacentCoords.Add(temp);
+                }
+            }
+        }
+        return availableAdjacentCoords;
+    }
     List<Vector2> GetAdjacentCoords(Vector2 position)
     {
         List<Vector2> adjacentCoords = new List<Vector2>();
@@ -119,5 +212,44 @@ public class MapManager : MonoBehaviour
         adjacentCoords.Add(new Vector2(position.x + 2, position.y + 2)); // Add top right coordinate
 
         return adjacentCoords;
+    }
+
+    GameObject GetPathTile(Vector2 A, Vector2 B)
+    {
+
+        if (A.x == B.x)
+        {
+            return vertical;
+        }
+        else if (A.y == B.y)
+        {
+            return horizontal;
+        }
+        else if (A.x > B.x)
+        {
+            if (A.y > B.y)
+            {
+                return forwardslash;
+            }
+            else
+            {
+                return backslash;
+            }
+        }
+        else if (A.x < B.x)
+        {
+            if (A.y < B.y)
+            {
+                return forwardslash;
+            }
+            else
+            {
+                return backslash;
+            }
+        }
+        else
+        {
+            return null;
+        }
     }
 }

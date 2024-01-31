@@ -183,15 +183,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20cfb9f99fd8b044693c2ef0f338f7ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startTile: {fileID: 7624979620654829675, guid: 7904b9879d848c249879eb343d01fb74, type: 3}
-  finishTile: {fileID: 1438077349321575162, guid: 3b89d7e2f8a06bc478339b34bcacaf68, type: 3}
-  normalTile: {fileID: 0}
-  shopTile: {fileID: 0}
-  blankTile: {fileID: 0}
-  horizontal: {fileID: 0}
-  vertical: {fileID: 0}
-  forwardslash: {fileID: 0}
-  backslash: {fileID: 0}
+  startRoom: {fileID: 7624979620654829675, guid: 7904b9879d848c249879eb343d01fb74, type: 3}
+  finishRoom: {fileID: 1438077349321575162, guid: 3b89d7e2f8a06bc478339b34bcacaf68, type: 3}
+  normalRoom: {fileID: 2784206025328955849, guid: bc488902d6e6cb2428b54775522a2abe, type: 3}
+  shopRoom: {fileID: 0}
+  blank: {fileID: 0}
+  horizontal: {fileID: 2675647091317929859, guid: a2b2cd0002d2caf43ad517a0de11a4b5, type: 3}
+  vertical: {fileID: 2769119677779826043, guid: 81dd3843f0071464496d0e0e62b0a7cf, type: 3}
+  forwardslash: {fileID: 2677218533171189061, guid: b05ce28679033264ba406264aa5727a7, type: 3}
+  backslash: {fileID: 8213394735480063779, guid: 1cf1ea67ab85e444395cb51bf0754769, type: 3}
 --- !u!4 &624376068
 Transform:
   m_ObjectHideFlags: 0
