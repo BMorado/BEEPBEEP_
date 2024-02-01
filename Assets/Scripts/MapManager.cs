@@ -21,15 +21,18 @@ public class MapManager : MonoBehaviour
     [SerializeField] private GameObject forwardslash;
     [SerializeField] private GameObject backslash;
 
-    private static int X_MAX = 5;
-    private static int Y_MAX = 5;
-    private static int MAX_NUMBER_OF_ROOMS = 20;
+    [SerializeField] private static int X_MAX = 3;
+    [SerializeField] private static int Y_MAX = 3;
+    private static int MAX_NUMBER_OF_ROOMS = 5;
     private Vector2[] rooms = new Vector2[MAX_NUMBER_OF_ROOMS];
     private int roomCounter = 0;
     private List<Vector2> paths = new List<Vector2>();
 
     #endregion
 
+    public void Awake() {
+
+    }
     // Start is called before the first frame update
     public void Start()
     {
@@ -66,30 +69,51 @@ public class MapManager : MonoBehaviour
             }
         }
 
-        List<Vector2> adjacentPaths;
+        List<Vector2> availableAdjacentPaths;
         int localMaxPaths;
+        int index;
         foreach (Vector2 room in rooms)
         {
-            adjacentPaths = GetAvailableAdjacentPaths(room);
 
-            if (adjacentPaths.Count != 0)
+            availableAdjacentPaths = GetAvailableAdjacentPaths(room);
+            
+            Debug.Log(room);
+            String m = "Before {";
+            foreach (Vector2 v in availableAdjacentPaths)
             {
-                localMaxPaths = UnityEngine.Random.Range(1, adjacentPaths.Count - 1);
+                m += "( " + v.x + ", " + v.y + ") ";
+            }
+            Debug.Log(m + "}");
+
+            if (availableAdjacentPaths.Count != 0)
+            {
+                localMaxPaths = UnityEngine.Random.Range(1, availableAdjacentPaths.Count - 1);
+                Debug.Log("Max Paths: " + localMaxPaths);
                 count = 0;
                 while (count < localMaxPaths)
                 {
-                    temp = adjacentPaths.Count;
-                    int index = UnityEngine.Random.Range(0, adjacentPaths.Count - 1);
+                    index = UnityEngine.Random.Range(0, availableAdjacentPaths.Count - 1);
+                    Debug.Log("Index: " + index);
 
-                    GameObject pathTile = GetPathTile(room, adjacentPaths[index]);
-                    Instantiate(pathTile, adjacentPaths[index], quaternion.identity);
-
-                    paths.Add(adjacentPaths[index]);
-                    adjacentPaths.Remove(adjacentPaths[index]);
-
+                    GameObject pathTile = GetPathTile(room, availableAdjacentPaths[index]);
+                    Instantiate(pathTile, availableAdjacentPaths[index], quaternion.identity);
+                    paths.Add(availableAdjacentPaths[index]);
+                    m = "paths: {";
+                    foreach (Vector2 v in paths)
+                    {
+                        m += "( " + v.x + ", " + v.y + ") ";
+                    }
+                    Debug.Log(m + "}");
+                    availableAdjacentPaths.Remove(availableAdjacentPaths[index]);
                     count++;
                 }
             }
+            m = "After {";
+            foreach (Vector2 v in availableAdjacentPaths)
+            {
+                m += "( " + v.x + ", " + v.y + ") ";
+            }
+            Debug.Log(m + "}");
         }
     }
 
@@ -217,7 +241,7 @@ public class MapManager : MonoBehaviour
         }
         else
         {
-            return null;
+            return blank;
         }
     }
 }
