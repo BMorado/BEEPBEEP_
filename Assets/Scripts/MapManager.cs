@@ -5,8 +5,10 @@ using Random = Unity.Mathematics.Random;
 using Unity.Collections;
 using Unity.VisualScripting;
 using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using UnityEngine.UIElements;
+using Debug = UnityEngine.Debug;
 
 public class MapManager : MonoBehaviour
 {
@@ -21,9 +23,9 @@ public class MapManager : MonoBehaviour
     [SerializeField] private GameObject forwardslash;
     [SerializeField] private GameObject backslash;
 
-    private static int X_MAX = 5;
-    private static int Y_MAX = 5;
-    private static int MAX_NUMBER_OF_ROOMS = 20;
+    private static int X_MAX = 40;
+    private static int Y_MAX = 40;
+    private static int MAX_NUMBER_OF_ROOMS = 40;
     private Vector2[] rooms = new Vector2[MAX_NUMBER_OF_ROOMS];
     private int roomCounter = 0;
     private List<Vector2> paths = new List<Vector2>();
@@ -33,9 +35,12 @@ public class MapManager : MonoBehaviour
     // Start is called before the first frame update
     public void Start()
     {
-        Debug.Log("problem");
+        Stopwatch time = new Stopwatch();
+        time.Start();
+       Debug.Log("problem");
         // UnityEngine.Random.InitState(System.DateTime.Now.Millisecond);
-
+        
+        
         int x = UnityEngine.Random.Range((X_MAX * -1), X_MAX);
         int y = UnityEngine.Random.Range((Y_MAX * -1), Y_MAX);
 
@@ -70,6 +75,7 @@ public class MapManager : MonoBehaviour
         int localMaxPaths;
         foreach (Vector2 room in rooms)
         {
+            // get posible paths
             adjacentPaths = GetAvailableAdjacentPaths(room);
 
             if (adjacentPaths.Count != 0)
@@ -79,18 +85,22 @@ public class MapManager : MonoBehaviour
                 while (count < localMaxPaths)
                 {
                     temp = adjacentPaths.Count;
-                    int index = UnityEngine.Random.Range(0, adjacentPaths.Count - 1);
+                    int index = UnityEngine.Random.Range(0, adjacentPaths.Count -1);
 
                     GameObject pathTile = GetPathTile(room, adjacentPaths[index]);
+                    
                     Instantiate(pathTile, adjacentPaths[index], quaternion.identity);
-
                     paths.Add(adjacentPaths[index]);
+                    
                     adjacentPaths.Remove(adjacentPaths[index]);
-
+                    
+                    
                     count++;
                 }
             }
         }
+        time.Stop();
+        Debug.Log(time.ElapsedMilliseconds);
     }
 
     private void SpawnAdjacentRoom(GameObject prefabTile, Vector2 root)
