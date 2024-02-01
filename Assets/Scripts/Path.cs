@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Path : MonoBehaviour
 {
-    [SerializeField] private Room a;
-    [SerializeField] private Room b;
-    private bool oneWay;
+    // [SerializeField] private Room a;
+    // [SerializeField] private Room b;
+    // private bool oneWay;
     
     // Start is called before the first frame update
     void Start()

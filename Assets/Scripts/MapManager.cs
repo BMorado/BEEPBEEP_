@@ -21,9 +21,9 @@ public class MapManager : MonoBehaviour
     [SerializeField] private GameObject forwardslash;
     [SerializeField] private GameObject backslash;
 
-    private static int X_MAX = 3;
-    private static int Y_MAX = 3;
-    private static int MAX_NUMBER_OF_ROOMS = 5;
+    private static int X_MAX = 5;
+    private static int Y_MAX = 5;
+    private static int MAX_NUMBER_OF_ROOMS = 20;
     private Vector2[] rooms = new Vector2[MAX_NUMBER_OF_ROOMS];
     private int roomCounter = 0;
     private List<Vector2> paths = new List<Vector2>();
@@ -33,6 +33,7 @@ public class MapManager : MonoBehaviour
     // Start is called before the first frame update
     public void Start()
     {
+        Debug.Log("problem");
         // UnityEngine.Random.InitState(System.DateTime.Now.Millisecond);
 
         int x = UnityEngine.Random.Range((X_MAX * -1), X_MAX);
@@ -46,7 +47,7 @@ public class MapManager : MonoBehaviour
 
         int count = 0;
         int temp = 0;
-        int finalRoomIndex = UnityEngine.Random.Range(MAX_NUMBER_OF_ROOMS / 2, MAX_NUMBER_OF_ROOMS);
+        int finalRoomIndex = UnityEngine.Random.Range(MAX_NUMBER_OF_ROOMS / 2, MAX_NUMBER_OF_ROOMS - 2);
         while (count < MAX_NUMBER_OF_ROOMS - 1)
         {
             temp = roomCounter;
@@ -71,19 +72,9 @@ public class MapManager : MonoBehaviour
         {
             adjacentPaths = GetAvailableAdjacentPaths(room);
 
-            Debug.Log("root: (" + room.x + ", " + room.y + ")");
-
-            string message = "adjacent Paths { ";
-            foreach (Vector2 v in adjacentPaths)
-            {
-                message += ("(" + v.x + ", " + v.y + ") ");
-            }
-            message += "}";
-            Debug.Log(message);
-
             if (adjacentPaths.Count != 0)
             {
-                localMaxPaths = UnityEngine.Random.Range(0, adjacentPaths.Count - 1);
+                localMaxPaths = UnityEngine.Random.Range(1, adjacentPaths.Count - 1);
                 count = 0;
                 while (count < localMaxPaths)
                 {
@@ -93,34 +84,11 @@ public class MapManager : MonoBehaviour
                     GameObject pathTile = GetPathTile(room, adjacentPaths[index]);
                     Instantiate(pathTile, adjacentPaths[index], quaternion.identity);
 
-                    // string message = "Before: { ";
-                    // foreach (Vector2 v in adjacentPaths)
-                    // {
-                    //     message += ("(" + v.x + ", " + v.y + ") ");
-                    // }
-                    // message += "}";
-                    // Debug.Log(message);
-
                     paths.Add(adjacentPaths[index]);
                     adjacentPaths.Remove(adjacentPaths[index]);
 
-                    // message = "After: { ";
-                    // foreach (Vector2 v in adjacentPaths)
-                    // {
-                    //     message += ("(" + v.x + ", " + v.y + ") ");
-                    // }
-                    // message += "}";
-                    // Debug.Log(message);
-
                     count++;
                 }
-                message = "paths: { ";
-                    foreach (Vector2 v in paths)
-                    {
-                        message += ("(" + v.x + ", " + v.y + ") ");
-                    }
-                    message += "}";
-                    Debug.Log(message);
             }
         }
     }
