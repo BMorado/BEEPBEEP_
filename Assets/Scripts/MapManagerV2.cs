@@ -7,6 +7,7 @@ using Unity.VisualScripting;
 using System;
 using System.Runtime.InteropServices;
 using UnityEngine.UIElements;
+using System.Linq;
 
 public class MapManagerV2 : MonoBehaviour
 {
@@ -28,39 +29,71 @@ public class MapManagerV2 : MonoBehaviour
     # region Global Variables
 
     // Global Variables for map generation
-    [SerializeField] private static int X_MAX = 2;
-    [SerializeField] private static int Y_MAX = 2;
-    [SerializeField] private static int MAX_NUMBER_OF_ROOMS = 5;
-    private int roomCounter = 0;
-    private Dictionary<Vector2, GameObject> gameBoard = new Dictionary<Vector2, GameObject>();
+    [SerializeField] private static int X_MAX = 5;
+    [SerializeField] private static int Y_MAX = 5;
+    [SerializeField] private static int MAX_NUMBER_OF_ROOMS = 10;
 
     #endregion
-
-    public void Awake()
-    {
-
-    }
 
     // Start is called before the first frame update
     public void Start()
     {
-        InitializeGameBoard();
-
-        SpawnGameBoard();
+        Dictionary<Vector2, GameObject> gameBoard = InitializeGameBoard();
+        gameBoard = AddRooms(gameBoard);
+        SpawnGameBoard(gameBoard);
 
     }
 
-    // private void SpawnAdjacentRoom(GameObject prefabTile, Vector2 root)
-    // {
-    //     List<Vector2> adjacentCoords = GetAvailableAdjacentRooms(root);
-    //     if (adjacentCoords.Count != 0)
-    //     {
-    //         int index = UnityEngine.Random.Range(0, adjacentCoords.Count - 1);
-    //         Instantiate(prefabTile, adjacentCoords[index], quaternion.identity);
-    //         rooms[roomCounter] = adjacentCoords[index];
-    //         roomCounter++;
-    //     }
-    // }
+    private Dictionary<Vector2, GameObject> AddRooms(Dictionary<Vector2, GameObject> gameBoard)
+    {
+        List<Vector2> availableAdjacentRooms;
+        List<Vector2> existingRooms;
+        bool added; // keeps track of whether a room was added in each iteration
+        int count = 0; // for iteration (keeps track of number of rooms as well)
+        int randomExistingRoomIndex; // randomly chooses which room to spawn a new one around
+        int adjacentRoomIndex; // random index of available adjacent rooms
+
+        // randomizes the iteration that the final room will be spawned (after the first half is spawned)
+        int finalRoomIndex = UnityEngine.Random.Range(MAX_NUMBER_OF_ROOMS / 2, MAX_NUMBER_OF_ROOMS - 2);
+
+        while (count < MAX_NUMBER_OF_ROOMS - 1)
+        {
+            // make a list of all keys where GameObject values are not blank tiles;
+            // these will be rooms, as it assumes that no paths have been generated yet
+            existingRooms = gameBoard.Where(pair => pair.Value != blank).Select(pair => pair.Key).ToList();
+            randomExistingRoomIndex = UnityEngine.Random.Range(0, existingRooms.Count);
+            added = false; // so far, a room has not been added
+
+            // from the randomly selected room, store all available adjacent room spaces
+            availableAdjacentRooms = GetAvailableAdjacentRooms(gameBoard, existingRooms[randomExistingRoomIndex]);
+
+            // will not add a room if there are no available adjacent coords
+            if (availableAdjacentRooms != null)
+            {
+                // adds final room if this iteration is the "Final Room" iteration
+                if (finalRoomIndex == count)
+                {
+                    adjacentRoomIndex = UnityEngine.Random.Range(0, availableAdjacentRooms.Count - 1);
+                    gameBoard[availableAdjacentRooms[adjacentRoomIndex]] = finishRoom; // changes the mapped GameObject to finishRoom
+                    added = true; // room was added successfully
+                }
+                // adds a normal room otherwise
+                else
+                {
+                    adjacentRoomIndex = UnityEngine.Random.Range(0, availableAdjacentRooms.Count - 1);
+                    gameBoard[availableAdjacentRooms[adjacentRoomIndex]] = normalRoom; // changes the mapped GameObject to normalRoom
+                    added = true; // room was added successfully
+                }
+            }
+
+            // count (of rooms) will not increase until iteration actually adds a room
+            if (added)
+            {
+                count++;
+            }
+        }
+        return gameBoard;
+    }
 
     // // private void SpawnAdjacentPath(GameObject prefabTile, Vector2 root)
     // // {
@@ -75,7 +108,7 @@ public class MapManagerV2 : MonoBehaviour
     // //     }
     // // }
 
-    private List<Vector2> GetAvailableAdjacentRooms(Vector2 root)
+    private List<Vector2> GetAvailableAdjacentRooms(Dictionary<Vector2, GameObject> gameBoard, Vector2 root)
     {
         List<Vector2> allAdjacentCoords = GetAdjacentCoords(root);
         List<Vector2> availableAdjacentCoords = new List<Vector2>();
@@ -184,7 +217,7 @@ public class MapManagerV2 : MonoBehaviour
     // }
 
     /* Spawns the entire board based on dictionary */
-    private void SpawnGameBoard()
+    private void SpawnGameBoard(Dictionary<Vector2, GameObject> gameBoard)
     {
         foreach (KeyValuePair<Vector2, GameObject> tile in gameBoard)
         {
@@ -193,9 +226,9 @@ public class MapManagerV2 : MonoBehaviour
     }
 
     /* Initialize the entire space of the game with the start room and store all coords in dictionary */
-    private void InitializeGameBoard()
+    private Dictionary<Vector2, GameObject> InitializeGameBoard()
     {
-
+        Dictionary<Vector2, GameObject> gameBoard = new Dictionary<Vector2, GameObject>(); // instantiate Dictionary and store in local variable
         Vector2 position; // temporary position while looping
 
         // Start loop from (-X_MAX - 1) to (X_MAX + 1); +-1 is the border (filled with blanks)
@@ -215,5 +248,7 @@ public class MapManagerV2 : MonoBehaviour
         int y = UnityEngine.Random.Range((Y_MAX * -1), Y_MAX); // y-coord
         Vector2 startPos = new Vector2(x, y); // creates Vector2 object for the start position
         gameBoard[startPos] = startRoom; // replaces key with start Room
+
+        return gameBoard;
     }
 }
