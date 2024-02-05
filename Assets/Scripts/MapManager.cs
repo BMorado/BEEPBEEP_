@@ -44,8 +44,9 @@ public class MapManager : MonoBehaviour
         SpawnGameBoard(gameBoard); // output all tiles in the saved dictionary
     }
 
-
-    /* Randomly adds rooms including the finish room until MAX_NUMBER_OF_ROOMS has been reached */
+    /*
+    * Randomly adds rooms including the finish room until MAX_NUMBER_OF_ROOMS has been reached 
+    */
     private Dictionary<Vector2, GameObject> AddRooms(Dictionary<Vector2, GameObject> gameBoard)
     {
         List<Vector2> availableAdjacentRooms;
@@ -143,7 +144,9 @@ public class MapManager : MonoBehaviour
     }
 
 
-    /* Extension of Adjacent coords, filters out any spaces that are not blank in any of the returned coords */
+    /* 
+    * Extension of Adjacent coords, filters out any spaces that are not blank in any of the returned coords 
+    */
     private List<Vector2> GetAvailableAdjacentRooms(Dictionary<Vector2, GameObject> gameBoard, Vector2 root)
     {
         List<Vector2> allAdjacentCoords = GetAdjacentCoords(root);
@@ -173,7 +176,9 @@ public class MapManager : MonoBehaviour
     }
 
 
-    /* Extension of Adjacent coords, decides whether there is a potential path space */
+    /* 
+    * Extension of Adjacent coords, decides whether there is a potential path space 
+    */
     private List<Vector2> GetAvailableAdjacentPaths(Dictionary<Vector2, GameObject> gameBoard, Vector2 root)
     {
         List<Vector2> allAdjacentCoords = GetAdjacentCoords(root);
@@ -211,7 +216,9 @@ public class MapManager : MonoBehaviour
     }
 
 
-    /* Adjacent Coords in this case is any 8 directions by 2 (NOT BY 1) */
+    /* 
+    * Adjacent Coords in this case is any 8 directions by 2 (NOT BY 1) 
+    */
     List<Vector2> GetAdjacentCoords(Vector2 position)
     {
         List<Vector2> adjacentCoords = new List<Vector2>();
@@ -229,7 +236,9 @@ public class MapManager : MonoBehaviour
     }
 
 
-    /* Based on two coordinates, decide which directional path to return */
+    /* 
+    * Based on two coordinates, decide which directional path to return 
+    */
     GameObject GetPathTile(Vector2 A, Vector2 B)
     {
         // both have same x means vertical line 
@@ -277,7 +286,9 @@ public class MapManager : MonoBehaviour
     }
 
 
-    /* Spawns the entire board based on dictionary */
+    /* 
+    * Spawns the entire board based on dictionary 
+    */
     private void SpawnGameBoard(Dictionary<Vector2, GameObject> gameBoard)
     {
         foreach (KeyValuePair<Vector2, GameObject> tile in gameBoard)
@@ -287,7 +298,9 @@ public class MapManager : MonoBehaviour
     }
 
 
-    /* Initialize the entire space of the game with the start room and store all coords in dictionary */
+    /* 
+    * Initialize the entire space of the game with the start room and store all coords in dictionary 
+    */
     private Dictionary<Vector2, GameObject> InitializeGameBoard()
     {
         Dictionary<Vector2, GameObject> gameBoard = new Dictionary<Vector2, GameObject>(); // instantiate Dictionary and store in local variable
