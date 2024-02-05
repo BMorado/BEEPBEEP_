@@ -18,7 +18,7 @@ public class MapManagerV2 : MonoBehaviour
     [SerializeField] private GameObject finishRoom;
     [SerializeField] private GameObject normalRoom;
     [SerializeField] private GameObject shopRoom;
-    [SerializeField] private GameObject blank;
+    [SerializeField] private GameObject blankTile;
     [SerializeField] private GameObject horizontal;
     [SerializeField] private GameObject vertical;
     [SerializeField] private GameObject forwardslash;
@@ -44,6 +44,8 @@ public class MapManagerV2 : MonoBehaviour
 
     }
 
+
+    /* Randomly adds rooms including the finish room until MAX_NUMBER_OF_ROOMS has been reached */
     private Dictionary<Vector2, GameObject> AddRooms(Dictionary<Vector2, GameObject> gameBoard)
     {
         List<Vector2> availableAdjacentRooms;
@@ -60,7 +62,7 @@ public class MapManagerV2 : MonoBehaviour
         {
             // make a list of all keys where GameObject values are not blank tiles;
             // these will be rooms, as it assumes that no paths have been generated yet
-            existingRooms = gameBoard.Where(pair => pair.Value != blank).Select(pair => pair.Key).ToList();
+            existingRooms = gameBoard.Where(pair => pair.Value != blankTile).Select(pair => pair.Key).ToList();
             randomExistingRoomIndex = UnityEngine.Random.Range(0, existingRooms.Count);
             added = false; // so far, a room has not been added
 
@@ -95,70 +97,99 @@ public class MapManagerV2 : MonoBehaviour
         return gameBoard;
     }
 
-    // // private void SpawnAdjacentPath(GameObject prefabTile, Vector2 root)
-    // // {
-    // //     List<Vector2> adjacentCoords = GetAvailableAdjacentPaths(root);
-    // //     if (adjacentCoords.Count != 0)
-    // //     {
-    // //         int index = UnityEngine.Random.Range(0, adjacentCoords.Count - 1);
 
-    // //         Instantiate(prefabTile, adjacentCoords[index], quaternion.identity);
-    // //         rooms[roomCounter] = adjacentCoords[index];
-    // //         roomCounter++;
-    // //     }
-    // // }
+    // private Dictionary<Vector2, GameObject> AddPaths(Dictionary<Vector2, GameObject> gameBoard)
+    // {
+    //     List<Vector2> availableAdjacentPaths;
+    //     int localMaxPaths;
+    //     int index;
+    //     foreach (Vector2 room in rooms)
+    //     {
+    //         availableAdjacentPaths = GetAvailableAdjacentPaths(room);
 
+    //         if (availableAdjacentPaths.Count != 0)
+    //         {
+    //             localMaxPaths = UnityEngine.Random.Range(1, availableAdjacentPaths.Count - 1);
+    //             count = 0;
+    //             while (count < localMaxPaths)
+    //             {
+    //                 index = UnityEngine.Random.Range(0, availableAdjacentPaths.Count - 1);
+    //                 Debug.Log("Index: " + index);
+
+    //                 GameObject pathTile = GetPathTile(room, availableAdjacentPaths[index]);
+    //                 Instantiate(pathTile, availableAdjacentPaths[index], quaternion.identity);
+    //                 paths.Add(availableAdjacentPaths[index]);
+
+    //                 availableAdjacentPaths.Remove(availableAdjacentPaths[index]);
+    //                 count++;
+    //             }
+    //         }
+    //     }
+    //     return gameBoard;
+    // }
+
+
+    /* Extension of Adjacent coords, filters out any spaces that are not blank in any of the returned coords */
     private List<Vector2> GetAvailableAdjacentRooms(Dictionary<Vector2, GameObject> gameBoard, Vector2 root)
     {
         List<Vector2> allAdjacentCoords = GetAdjacentCoords(root);
-        List<Vector2> availableAdjacentCoords = new List<Vector2>();
+        List<Vector2> availableAdjacentRooms = new List<Vector2>();
 
+        // loop through each of the returned adjacent coords
         foreach (Vector2 coord in allAdjacentCoords)
         {
             // Check if coordinate is in the game board (not including the border)
             if (Math.Abs(coord.x) <= X_MAX && Math.Abs(coord.y) <= Y_MAX)
             {
                 // Check if any the coordinate is available (blank means available)
-                if (gameBoard[coord] == blank)
+                if (gameBoard[coord] == blankTile)
                 {
-                    availableAdjacentCoords.Add(coord);
+                    availableAdjacentRooms.Add(coord);
                 }
             }
         }
 
         // if there are no available adjacent rooms available, then method returns null
-        if (availableAdjacentCoords.Count == 0)
+        if (availableAdjacentRooms.Count == 0)
         {
-            availableAdjacentCoords = null;
+            availableAdjacentRooms = null;
         }
 
-        return availableAdjacentCoords;
+        return availableAdjacentRooms;
     }
 
-    // private List<Vector2> GetAvailableAdjacentPaths(Vector2 root)
-    // {
-    //     List<Vector2> allAdjacentCoords = GetAdjacentCoords(root);
-    //     List<Vector2> availableAdjacentCoords = new List<Vector2>();
-    //     Vector2 temp;
 
-    //     foreach (Vector2 coord in allAdjacentCoords)
-    //     {
-    //         if (Array.IndexOf(rooms, coord) != -1)
-    //         {
-    //             if (!paths.Contains(coord))
-    //             {
-    //                 temp = coord;
-    //                 temp.x = (temp.x + root.x) / 2;
-    //                 temp.y = (temp.y + root.y) / 2;
+    /* Extension of Adjacent coords, decides whether there is a potential path space */
+    private List<Vector2> GetAvailableAdjacentPaths(Dictionary<Vector2, GameObject> gameBoard, Vector2 root)
+    {
+        List<Vector2> allAdjacentCoords = GetAdjacentCoords(root);
+        List<Vector2> availableAdjacentPaths = new List<Vector2>();
+        Vector2 pathPosition = new Vector2(); // keeps track of available path to store
 
-    //                 availableAdjacentCoords.Add(temp);
-    //             }
-    //         }
-    //     }
-    //     return availableAdjacentCoords;
-    // }
+        // loop through each of the returned adjacent coords
+        foreach (Vector2 coord in allAdjacentCoords)
+        {
+            // make sure that the gameboord actually has this coordinate
+            if (gameBoard.ContainsKey(coord))
+            {
+                // check if any of these is already a room tile
+                if (gameBoard[coord] != blankTile)
+                {
+                    pathPosition.x = (coord.x + root.x) / 2; // midpoint equation for x
+                    pathPosition.y = (coord.y + root.y) / 2; // midpoint equation for x
+                    availableAdjacentPaths.Add(pathPosition);
+                }
+            }
+        }
 
-    // 
+        // if there are no available adjacent paths available, then method returns null
+        if (availableAdjacentPaths.Count == 0)
+        {
+            availableAdjacentPaths = null;
+        }
+        return availableAdjacentPaths;
+    }
+
 
     /* Adjacent Coords in this case is any 8 directions by 2 (NOT BY 1) */
     List<Vector2> GetAdjacentCoords(Vector2 position)
@@ -177,44 +208,54 @@ public class MapManagerV2 : MonoBehaviour
         return adjacentCoords;
     }
 
-    // GameObject GetPathTile(Vector2 A, Vector2 B)
-    // {
 
-    //     if (A.x == B.x)
-    //     {
-    //         return vertical;
-    //     }
-    //     else if (A.y == B.y)
-    //     {
-    //         return horizontal;
-    //     }
-    //     else if (A.x > B.x)
-    //     {
-    //         if (A.y > B.y)
-    //         {
-    //             return forwardslash;
-    //         }
-    //         else
-    //         {
-    //             return backslash;
-    //         }
-    //     }
-    //     else if (A.x < B.x)
-    //     {
-    //         if (A.y < B.y)
-    //         {
-    //             return forwardslash;
-    //         }
-    //         else
-    //         {
-    //             return backslash;
-    //         }
-    //     }
-    //     else
-    //     {
-    //         return blank;
-    //     }
-    // }
+    /* Based on two coordinates, decide which directional path to return */
+    GameObject GetPathTile(Vector2 A, Vector2 B)
+    {
+        // both have same x means vertical line 
+        if (A.x == B.x)
+        {
+            return vertical;
+        }
+        // both have same y means horizontal line
+        else if (A.y == B.y)
+        {
+            return horizontal;
+        }
+        else if (A.x > B.x)
+        {
+            // x and y are both greater means forwardslash
+            if (A.y > B.y)
+            {
+                return forwardslash;
+            }
+            // one of x,y is greater, other is smaller means backslash 
+            else
+            {
+                return backslash;
+            }
+        }
+        else if (A.x < B.x)
+        {
+            // x and y are both lower means forwardslash
+            if (A.y < B.y)
+            {
+                return forwardslash;
+            }
+            // one of x,y is greater, other is smaller means backslash
+            else
+            {
+                return backslash;
+            }
+        }
+        // Should not hit this state. If it does, there is an error
+        else
+        {
+            Debug.Log("Error, GetPathTile returned null");
+            return null;
+        }
+    }
+
 
     /* Spawns the entire board based on dictionary */
     private void SpawnGameBoard(Dictionary<Vector2, GameObject> gameBoard)
@@ -224,6 +265,7 @@ public class MapManagerV2 : MonoBehaviour
             Instantiate(tile.Value, tile.Key, quaternion.identity);
         }
     }
+
 
     /* Initialize the entire space of the game with the start room and store all coords in dictionary */
     private Dictionary<Vector2, GameObject> InitializeGameBoard()
@@ -239,7 +281,7 @@ public class MapManagerV2 : MonoBehaviour
             {
                 position.x = i; // x-axis of each coordinate
                 position.y = j; // y-axis of each coordinate
-                gameBoard.Add(position, blank); // coordinate is the key, and a blank space is its value
+                gameBoard.Add(position, blankTile); // coordinate is the key, and a blank space is its value
             }
         }
 
