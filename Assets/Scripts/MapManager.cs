@@ -21,12 +21,13 @@ public class MapManager : MonoBehaviour
     [SerializeField] private GameObject forwardslash;
     [SerializeField] private GameObject backslash;
 
-    [SerializeField] private static int X_MAX = 3;
-    [SerializeField] private static int Y_MAX = 3;
-    private static int MAX_NUMBER_OF_ROOMS = 5;
+    [SerializeField] private static int X_MAX = 10;
+    [SerializeField] private static int Y_MAX = 10;
+    private static int MAX_NUMBER_OF_ROOMS = 20;
     private Vector2[] rooms = new Vector2[MAX_NUMBER_OF_ROOMS];
     private int roomCounter = 0;
     private List<Vector2> paths = new List<Vector2>();
+    private Dictionary<Vector2, GameObject> board = new Dictionary<Vector2, GameObject>();
 
     #endregion
 
