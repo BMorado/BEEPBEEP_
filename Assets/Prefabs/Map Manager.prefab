@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &9040601003912754722
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3932801754171956568}
+  - component: {fileID: 5101120595329044155}
+  m_Layer: 0
+  m_Name: Map Manager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3932801754171956568
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9040601003912754722}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.5860868, y: 0.9003225, z: 0.062014807}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5101120595329044155
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9040601003912754722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 399a868bb52bf5a4c9858368c85dfb6e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startRoom: {fileID: 7624979620654829675, guid: 7904b9879d848c249879eb343d01fb74, type: 3}
+  finishRoom: {fileID: 1438077349321575162, guid: 3b89d7e2f8a06bc478339b34bcacaf68, type: 3}
+  normalRoom: {fileID: 2784206025328955849, guid: bc488902d6e6cb2428b54775522a2abe, type: 3}
+  shopRoom: {fileID: 6237291348447023799, guid: 427cdedb21d7f714dba32f06191aa408, type: 3}
+  blank: {fileID: 6145487470789462071, guid: 8b58478d9c9d7844e95c32d0f8301f9d, type: 3}
+  horizontal: {fileID: 2675647091317929859, guid: a2b2cd0002d2caf43ad517a0de11a4b5, type: 3}
+  vertical: {fileID: 2769119677779826043, guid: 81dd3843f0071464496d0e0e62b0a7cf, type: 3}
+  forwardslash: {fileID: 2677218533171189061, guid: b05ce28679033264ba406264aa5727a7, type: 3}
+  backslash: {fileID: 8213394735480063779, guid: 1cf1ea67ab85e444395cb51bf0754769, type: 3}
