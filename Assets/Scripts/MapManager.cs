@@ -29,9 +29,9 @@ public class MapManager : MonoBehaviour
     # region Global Variables
 
     // Global Variables for map generation
-    [SerializeField] private static int X_MAX = 9; // x-axis; can go + or -
-    [SerializeField] private static int Y_MAX = 4; // y-axis; can go + or -
-    [SerializeField] private static int MAX_NUMBER_OF_ROOMS = 30; // if too high in relation to X & Y MAX, then infinite-loop (TO-FIX)
+    [SerializeField] private const int X_MAX = 10; // x-axis; can go + or -
+    [SerializeField] private const int Y_MAX = 10; // y-axis; can go + or -
+    [SerializeField] private const int MAX_NUMBER_OF_ROOMS = (X_MAX * Y_MAX) / 2;
 
     #endregion
 
@@ -323,6 +323,7 @@ public class MapManager : MonoBehaviour
         int y = UnityEngine.Random.Range((Y_MAX * -1), Y_MAX); // y-coord
         Vector2 startPos = new Vector2(x, y); // creates Vector2 object for the start position
         gameBoard[startPos] = startRoom; // replaces key with start Room
+        Camera.main.transform.Translate(startPos); // camera on start room
 
         return gameBoard;
     }
