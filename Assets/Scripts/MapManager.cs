@@ -29,8 +29,8 @@ public class MapManager : MonoBehaviour
     # region Global Variables
 
     // Global Variables for map generation
-    [SerializeField] private const int X_MAX = 10; // x-axis; can go + or -
-    [SerializeField] private const int Y_MAX = 10; // y-axis; can go + or -
+    [SerializeField] private const int X_MAX = 5; // x-axis; can go + or -
+    [SerializeField] private const int Y_MAX = 5; // y-axis; can go + or -
     [SerializeField] private const int MAX_NUMBER_OF_ROOMS = (X_MAX * Y_MAX) / 2;
 
     #endregion
